@@ -1,0 +1,37 @@
+name: Revert and Create PR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  revert_and_create_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "Push controller"
+        git config --global user.email "action@github.com"
+
+    - name: Revert to previous commit
+      run: |
+        git checkout main
+        git revert --no-commit HEAD~1
+        git commit -m "Revert to previous commit"
+
+    - name: Push revert commit
+      run: |
+        git push origin HEAD:revert-branch
+
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        base: main
+        head: revert-branch
+        title: "Revert last commit and review"
+        body: "This PR reverts to the previous commit and needs to be reviewed."
