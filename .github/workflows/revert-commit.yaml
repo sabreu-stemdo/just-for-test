@@ -18,20 +18,23 @@ jobs:
         git config --global user.name "Push controller"
         git config --global user.email "action@github.com"
 
-    - name: Revert to previous commit
+    - name: Reset to the last remote commit
       run: |
-        git checkout main
-        git revert --no-commit HEAD~1
-        git commit -m "Revert to previous commit"
+        git fetch origin
+        git reset --hard origin/main
 
-    - name: Push revert commit
+
+    - name: Create a new branch with the pushed changes
       run: |
-        git push origin HEAD:revert-branch
+        git checkout -b revert-branch
+        git add .
+        git commit -m "Reapply changes after revert to remote state"
+        git push origin revert-branch
 
-    - name: Create pull request
+    - name: Create a pull request
       uses: peter-evans/create-pull-request@v5
       with:
         base: main
         head: revert-branch
-        title: "Revert last commit and review"
-        body: "This PR reverts to the previous commit and needs to be reviewed."
+        title: "Reapply changes after reverting to the latest remote commit"
+        body: "This PR contains the changes after reverting the main branch to the state of the latest remote commit."        
