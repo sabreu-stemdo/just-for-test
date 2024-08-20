@@ -23,6 +23,10 @@ jobs:
         git fetch origin
         git reset --hard origin/main
 
+    - name: Apply stashed changes
+      run: |
+        git stash apply        
+
 
     - name: Create a new branch with the pushed changes
       run: |
